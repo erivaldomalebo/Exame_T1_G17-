@@ -1,23 +1,218 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "cliente.h"
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<locale.h>
+#include "exame.h"
 
-#define MAX 50
+#define VERDE "\033[92m"
+#define BRANCO  "\033[97m"
 
-/* TAD CLIENTE*/
-void menu();
+#ifdef _WIN32
+    #include <windows.h>
+    #define PAUSA(ms) Sleep(ms)
+#else
+    #include <unistd.h>
+    #define PAUSA(ms) usleep(ms * 1000)
+#endif
+
+
+
+
+void menu2();
 int ler_inteiro(char *s);
 int validar_nome(char *s);//serve para garantir que o input deve ser um número e não um texto no scanf
 
+void menu();
+int cabecalho();
+void limparTela();
+void barraProgresso(const char *mensagem, int segundos);
 
-int main() {
-  system("chcp 65001 > null"); /*serve para aceitar acentuações para pcs que não           aceitam o locale.h*/
+int main(){
 
-  menu();
+  //setlocale(LC_ALL, "Portuguese");
+  system("chcp 65001 > null"); /*serve para aceitar acentuações para pcs que não aceitam o locale.h*/
+
+
+  cabecalho();
+
+
+ 	//Apenas para teste a parte de baixo
+
+  //Supermercado *supermercado  = criarCaixas();
+
+    /* abrir caixas*/
+    /* supermercado = abrirCaixa(supermercado,1);
+     supermercado = abrirCaixa(supermercado,2);
+     supermercado = abrirCaixa(supermercado,2);
+     supermercado = abrirCaixa(supermercado,-1);
+
+
+    inserirCliente(supermercado,1,"ivanildo",1,0);
+    inserirCliente(supermercado,1,"ivanildo",3,2);
+    inserirCliente(supermercado,2,"ivanildo",1,1);
+
+   imprimirTamanhoCaixas(supermercado);
+   piorCaixa(supermercado);*/
+
+
 
   return 0;
 }
+
+
+int cabecalho() {
+	 char opcao[10];
+    printf("\n╔══════════════════════════════════════════════════════════════╗\n");
+      printf("║       SIMULAÇÂO DE GESTÂO DE FILAS DE SUPERMERCADOS          ║\n");
+      printf("╚══════════════════════════════════════════════════════════════╝\n\n");
+    printf("||                                                            ||\n");
+    printf("||  Disciplina : Estrutura de Dados I                         ||\n");
+    printf("||  Curso      : Engenharia Informática                       ||\n");
+    printf("||  Docente    : Silvia António                               ||\n");
+    printf("||  Semestre   : 2026 / 1                                     ||\n");
+    printf("||                                                            ||\n");
+    printf("┌──────────────────────────────────────────────────────────────┐\n");
+	printf("│                     Dados do Grupo                           │\n");
+    printf("├──────────────────────────────────────────────────────────────┤\n");
+    printf("│  Grupo Nº 17                                                 │\n");
+    printf("│  Integrantes:                                                │\n");
+    printf("│    -> Diangienda Nkana  - 20240092                           │\n");
+    printf("│    -> Ivanildo Almeida  - 20240147                           │\n");
+    printf("│    -> Erivaldo Caginga  - 20241000                           │\n");
+    printf("│  Turma: 2º Ano T1                                            │\n");
+    printf("└──────────────────────────────────────────────────────────────┘\n\n");
+    printf("||  Pressione ENTER para iniciar a simulação                  ||\n");
+    printf("||                                                            ||\n");
+    printf("||  Pressione Q e ENTER para sair                             ||\n");
+    printf("||                                                            ||\n");
+    printf("================================================================\n");
+    printf("\nOpcao: ");
+    fgets(opcao, sizeof(opcao), stdin);
+
+    if (opcao[0] == 'q' || opcao[0] == 'Q')
+        return 0; // sair
+
+    else
+    	{
+    		limparTela();
+    		barraProgresso("Carregando dados do ficheiro .txt...", 3);
+    		menu();
+		}
+}
+
+
+
+void menu() {
+
+  int opcao;
+
+  do {
+
+  	   limparTela();
+    printf("\n\n\t\t\t\t------------------------------------------------\n\n");
+    printf("\t\t\t\tS U P E R M E R C A D O - I S P T E C _ M A L L \n\n");
+    printf("\t\t\t\t------------------------------------------------\n\n");
+    printf("\t\t\t\t\t1 -  Abrir caixa  \n");
+    printf("\t\t\t\t\t2 -  Fechar caixa \n");
+    printf("\t\t\t\t\t3 -  Inserir cliente \n");
+    printf("\t\t\t\t\t4 -  Mostrar Pior fila\n");
+    printf("\t\t\t\t\t5 -  Tamanho das filas\n");
+    printf("\t\t\t\t\t6 -  Trocar de fila \n");
+    printf("\t\t\t\t\t7 -  Desistir da fila\n");
+    printf("\t\t\t\t\t8 -  Imprimir fila\n");
+    printf("\t\t\t\t\t9 -  Simular atendimento \n");
+    printf("\t\t\t\t\t10 - Terminar simulação \n");
+    printf("\t\t\t\t\t11 - SAIR\n");
+    fflush(stdin);
+
+    printf("\nEscolha uma Opcao\n");
+    gets(opcao);
+
+    switch (opcao) {
+      case 1: {
+        break;
+      }
+      case 2: {
+        break;
+      }
+      case 3: {
+        break;
+      }
+      case 4:
+        break;
+      case 5: {
+        system("cls");
+        break;
+      }
+      case 6:
+        break;
+
+      case 7: {
+        break;
+      }
+      case 8: {
+
+        break;
+      }
+
+      case 9: {
+
+        break;
+      }
+
+	case 10: {
+
+        break;
+      }
+      case 11: {
+
+        break;
+      }
+
+      default:
+        printf("Opcao Invalida!\n");
+      }
+  } while (opcao != 11);
+}
+
+
+void limparTela(){
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
+
+void barraProgresso(const char *mensagem, int segundos) {
+
+   int largura = 30;
+
+    printf("\n%s%s\n", BRANCO, mensagem);
+
+    for (int i = 0; i <= largura; i++) {
+        int percent = (i * 100) / largura;
+
+        printf("\r[");
+        printf(VERDE);
+        for (int j = 0; j < i; j++)
+            printf("#");
+        printf(BRANCO);
+        for (int j = i; j < largura; j++)
+            printf(" ");
+        printf("] %3d%%", percent);
+
+        fflush(stdout);
+        PAUSA((segundos * 1000) / largura);
+    }
+    printf("\n");
+}
+
+
+
+
+
 int ler_inteiro(char *str) {
   char *final;
   long valor = strtol(str, &final, 10);
@@ -61,53 +256,33 @@ int validar_nome(char *nome) {
 }
 
 
-void menu() {
+
+/*void menu2() {
 
   int opcao, opcao_eliminar_no, num_itens_simples, num_items_especiais;
   char nome[MAX], input[MAX], input_numero[MAX], input_nome[MAX];
 
-  // Todos os clientes
-  Lista_Cliente * clientes = criarLista();
+  srand(time(NULL));
 
   do {
     printf("\n\n\t\t\t\t-------------------------------------\n\n");
     printf("\t\t\t\t\tS U P E R M E R C A D O \n\n");
     printf("\t\t\t\t-------------------------------------\n\n");
 
-    printf("\n\t\t\t\t\t╔══════════════════════════════════════╗\n");
-	printf("\t\t\t\t\t║          MENU PRINCIPAL              ║\n");
-	printf("\t\t\t\t\t╠══════════════════════════════════════╣\n");
-	printf("\t\t\t\t\t║ 01 - Iniciar a Simulação             ║\n");
-	printf("\t\t\t\t\t║ 02 - Abrir Caixa                     ║\n");
-	printf("\t\t\t\t\t║ 03 - Fechar Caixa                    ║\n");
-	printf("\t\t\t\t\t║ 04 - Inserir Cliente                 ║\n");
-	printf("\t\t\t\t\t║ 05 - Pior Fila                       ║\n");
-	printf("\t\t\t\t\t║ 06 - Tamanho das Filas               ║\n");
-	printf("\t\t\t\t\t║ 07 - Trocar de Fila                  ║\n");
-	printf("\t\t\t\t\t║ 08 - Desistir da Fila                ║\n");
-	printf("\t\t\t\t\t║ 09 - Imprimir Fila                   ║\n");
-	printf("\t\t\t\t\t║ 10 - Simular Atendimento             ║\n");
-	printf("\t\t\t\t\t║ 11 - Terminar Simulação              ║\n");
-	printf("\t\t\t\t\t║ 12 - Sair                            ║\n");
-	printf("\t\t\t\t\t╚══════════════════════════════════════╝\n");
+    printf("\t\t\t\t\t1 -  Iniciar a simulação \n");
+    printf("\t\t\t\t\t2 -  Abrir caixa  \n");
+    printf("\t\t\t\t\t3 -  Fechar caixa \n");
+    printf("\t\t\t\t\t4 -  Inserir cliente \n");
+    printf("\t\t\t\t\t5 -  Mostrar Pior fila\n");
+    printf("\t\t\t\t\t6 -  Tamanho das filas\n");
+    printf("\t\t\t\t\t7 -  Trocar de fila \n");
+    printf("\t\t\t\t\t8 -  Desistir da fila\n");
+    printf("\t\t\t\t\t9 -  Imprimir fila\n");
+    printf("\t\t\t\t\t10 - Simular atendimento \n");
+    printf("\t\t\t\t\t11 - Terminar simulação \n");
+    printf("\t\t\t\t\t12 - Mostrar todos clientes \n");
+    printf("\t\t\t\t\t13 - SAIR\n");
     fflush(stdin);
-
-    printf("\nEscolha uma Opcao\n");
-    gets(input);
-    opcao = ler_inteiro(input);
-
-    switch (opcao) {
-      case 1: {
-        break;
-      }
-      case 2: {
-        break;
-      }
-      case 3: {
-        system("cls");
-
-        break;
-      }
         //Inicio - > Inserir Cliente
       case 4: {
         system("cls");
@@ -128,51 +303,12 @@ void menu() {
 
 
         break;
-      }
-        //Fim - > Inserir Cliente
-      case 5: {
-        system("cls");
-        break;
-      }
-      case 6:
-        break;
-
-      case 7: {
-        break;
-      }
-      case 8: {
-        printf("\n╔══════════════════════════════════════════════════════════════╗\n");
-        printf("║   BEM-VINDO AO SISTEMA DE GESTÃO DE CLIENTES                 ║\n");
-        printf("╚══════════════════════════════════════════════════════════════╝\n\n");
-
-        printf("\tEste sistema foi desenvolvido para aplicar os nossos conhecimentos\n");
-        printf("\tsobre Tipos Abstratos de Dados e Listas encadeadas simples, aprendidos com a \n");
-        printf("\tEstimada Professora Sílvia António. \n\n");
-
-        printf("┌──────────────────────────────────────────────────────────────┐\n");
-        printf("│                     Dados do Grupo                           │\n");
-        printf("├──────────────────────────────────────────────────────────────┤\n");
-        printf("│  Grupo Nº 17                                                 │\n");
-        printf("│  Integrantes:                                                │\n");
-        printf("│    -> Diangienda Nkana  - 20240092                           │\n");
-        printf("│    -> Ivanildo Almeida  - 20240147                           │\n");
-        printf("│    -> Erivaldo Caginga  - 20241000                           │\n");
-        printf("│  Turma: 2º Ano T1                                            │\n");
-        printf("└──────────────────────────────────────────────────────────────┘\n\n");
-        break;
-      }
-
-      case 12:{
-          system("cls");
-          fflush(stdin);
-          imprimir(clientes);
-
-        break;
-      }
+      
 
       default:
         printf("Opcao Invalida!\n");
       }
   } while (opcao != 9);
-}
+}*/
+
 
