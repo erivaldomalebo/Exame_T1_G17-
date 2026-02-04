@@ -31,6 +31,13 @@ struct lista_fila{
 	struct lista_fila *prox;
 };
 
+struct stats {
+	 int totalClientAtendidos;
+    int totalItensProcessados;
+    int tempoTotalAtendimento;
+    int filaMaisDemorada;
+};
+
 
 int gerarAleatorio(int min, int max) {
 
