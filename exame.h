@@ -10,7 +10,7 @@
 typedef struct lista Cliente;
 typedef struct fila Caixa;
 typedef struct lista_fila Supermercado;
-
+typedef struct stats Estatistica;
 
 void imprimir(Cliente *l);
 int gerarAleatorio(int min, int max);
