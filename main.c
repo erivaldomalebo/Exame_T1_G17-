@@ -1,31 +1,13 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<locale.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "exame.h"
 
-#define VERDE "\033[92m"
-#define BRANCO  "\033[97m"
-
-#ifdef _WIN32
-    #include <windows.h>
-    #define PAUSA(ms) Sleep(ms)
-#else
-    #include <unistd.h>
-    #define PAUSA(ms) usleep(ms * 1000)
-#endif
-
-
-
-
-void menu2();
-int ler_inteiro(char *s);
-int validar_nome(char *s);//serve para garantir que o input deve ser um número e não um texto no scanf
+#define MAX 50
 
 void menu();
-int cabecalho();
-void limparTela();
-void barraProgresso(const char *mensagem, int segundos);
+int ler_inteiro(char *s);
+int validar_nome(char *s);
 
 Supermercado *supermercado = NULL;
 int main(){
@@ -210,79 +192,55 @@ void menu() {
 
 void limparTela(){
 #ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
+    system("chcp 65001 > nul");
 #endif
+
+    menu();
+    return 0;
 }
 
+int ler_inteiro(char *str)
+{
+    char *final;
+    long valor = strtol(str, &final, 10);
 
-void barraProgresso(const char *mensagem, int segundos) {
-
-   int largura = 30;
-
-    printf("\n%s%s\n", BRANCO, mensagem);
-
-    for (int i = 0; i <= largura; i++) {
-        int percent = (i * 100) / largura;
-
-        printf("\r[");
-        printf(VERDE);
-        for (int j = 0; j < i; j++)
-            printf("#");
-        printf(BRANCO);
-        for (int j = i; j < largura; j++)
-            printf(" ");
-        printf("] %3d%%", percent);
-
-        fflush(stdout);
-        PAUSA((segundos * 1000) / largura);
+    if (*final != '\0')
+    {
+        return -1;
     }
-    printf("\n");
+
+    return (int)valor;
 }
 
-
-
-
-
-int ler_inteiro(char *str) {
-  char *final;
-  long valor = strtol(str, &final, 10);
-
-  if (*final != '\0') {
-    //printf("Erro: entrada não é um número válido.\n");
-    return -1;
-  }
-
-  return (int)valor;
-}
-
-int validar_nome(char *nome) {
-  // Verifica se o nome está vazio
-  if (nome == NULL || strlen(nome) == 0) {
-    printf("[ O nome não pode estar vazio! ]\n");
-    return 0;
-  }
-
-  // Verifica se contém apenas espaços em branco
-  int apenasEspacos = 1;
-  for (int i = 0; nome[i] != '\0'; i++) {
-    if (nome[i] != ' ' && nome[i] != '\t' && nome[i] != '\n') {
-      apenasEspacos =0;
-      break;
+int validar_nome(char *nome)
+{
+    if (nome == NULL || strlen(nome) == 0)
+    {
+        printf("[ O nome não pode estar vazio! ]\n");
+        return 0;
     }
-  }
 
-  if (apenasEspacos) {
-    printf("[ O nome não pode conter apenas espaços! ]\n");
-    return 0;
-  }
+    int apenasEspacos = 1;
+    for (int i = 0; nome[i] != '\0'; i++)
+    {
+        if (nome[i] != ' ' && nome[i] != '\t' && nome[i] != '\n')
+        {
+            apenasEspacos = 0;
+            break;
+        }
+    }
 
-  // Verifica se o tamanho é maior que 30
-  if (strlen(nome) > 30) {
-    printf("[ O nome não pode ter mais de 30 caracteres! ]\n");
-    return 0;
-  }
+    if (apenasEspacos)
+    {
+        printf("[ O nome não pode conter apenas espaços! ]\n");
+        return 0;
+    }
 
-  return 1;  // Nome válido
+    if (strlen(nome) > 30)
+    {
+        printf("[ O nome não pode ter mais de 30 caracteres! ]\n");
+        return 0;
+    }
+
+    return 1;
 }

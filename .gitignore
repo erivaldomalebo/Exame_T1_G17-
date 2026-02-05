@@ -1,0 +1,73 @@
+# Compilação padrão
+*.o
+*.obj
+*obj
+*.lo
+*.la
+*.a
+*.so
+*.dll
+*.dylib
+-p
+programa
+
+# Executáveis
+a.out
+*.out
+*.exe
+
+# Diretórios de build
+/build/
+/bin/
+/dist/
+/debug/
+/release/
+
+# Arquivos de dependência
+*.d
+
+# Logs
+*.log
+
+# Backups
+*~
+*.bak
+*.tmp
+
+# Arquivos gerados pelo editor
+*.swp
+*.swo
+
+# VSCode
+.vscode/
+
+# CLion / JetBrains
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
+# CodeBlocks
+*.depend
+*.layout
+
+# MacOS
+.DS_Store
+
+# Linux
+.cache/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+!Makefile
+
+# Autotools
+*.in
+*.m4
+aclocal.m4
+autom4te.cache
+configure
+config.h
+config.log
+config.status
