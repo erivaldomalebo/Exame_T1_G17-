@@ -1,50 +1,55 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<locale.h>
 #include "exame.h"
 
-#define MAX 50
+#define VERDE "\033[92m"
+#define BRANCO  "\033[97m"
 
-void menu();
+#ifdef _WIN32
+    #include <windows.h>
+    #define PAUSA(ms) Sleep(ms)
+#else
+    #include <unistd.h>
+    #define PAUSA(ms) usleep(ms * 1000)
+#endif
+
+
+
 int ler_inteiro(char *s);
-int validar_nome(char *s);
+int validar_nome(char *s);//serve para garantir que o input deve ser um número e não um texto no scanf
+void menu(Supermercado *supermercado, Relatorio *rel);
+int cabecalho(Supermercado *sp, Relatorio *rel);
+void limparTela();
+void barraProgresso(const char *mensagem, int segundos);
 
-Supermercado *supermercado = NULL;
+
+
+
 int main(){
+	
+  	Supermercado *supermercado = criarCaixas();
 
-  //setlocale(LC_ALL, "Portuguese");
-  system("chcp 65001 > null"); /*serve para aceitar acentuações para pcs que não aceitam o locale.h*/
+  	Relatorio *relatorio = inicializar();
+  
+  	setlocale(LC_ALL, " ");
 
-
-  cabecalho();
-
-
- 	//Apenas para teste a parte de baixo
-
-  //Supermercado *supermercado  = criarCaixas();
-
-    /* abrir caixas*/
-    /* supermercado = abrirCaixa(supermercado,1);
-     supermercado = abrirCaixa(supermercado,2);
-     supermercado = abrirCaixa(supermercado,2);
-     supermercado = abrirCaixa(supermercado,-1);
+	#ifdef _WIN32
+   		 system("chcp 65001 > nul"); /*serve para aceitar acentuações para pcs que não aceitam o locale.h no windows*/
+	#endif
+ 
 
 
-    inserirCliente(supermercado,1,"ivanildo",1,0);
-    inserirCliente(supermercado,1,"ivanildo",3,2);
-    inserirCliente(supermercado,2,"ivanildo",1,1);
-
-   imprimirTamanhoCaixas(supermercado);
-   piorCaixa(supermercado);*/
+  	cabecalho(supermercado,relatorio);
 
 
-
+ 
   return 0;
 }
 
 
-int cabecalho() {
-  supermercado = criarCaixas();
+int cabecalho(Supermercado *sp, Relatorio *rel) {
 	 char opcao[10];
     printf("\n╔══════════════════════════════════════════════════════════════╗\n");
       printf("║       SIMULAÇÂO DE GESTÂO DE FILAS DE SUPERMERCADOS          ║\n");
@@ -65,7 +70,7 @@ int cabecalho() {
     printf("│    -> Erivaldo Caginga  - 20241000                           │\n");
     printf("│  Turma: 2º Ano T1                                            │\n");
     printf("└──────────────────────────────────────────────────────────────┘\n\n");
-    printf("||  Pressione ENTER para iniciar a simulação                  ||\n");
+    printf("||  Pressione ENTER para [iniciar a simulação]                ||\n");
     printf("||                                                            ||\n");
     printf("||  Pressione Q e ENTER para sair                             ||\n");
     printf("||                                                            ||\n");
@@ -79,11 +84,10 @@ int cabecalho() {
     else
     	{
     		limparTela();
-    		//Trocar para 3seg
-    		barraProgresso("Carregando dados do ficheiro .txt...", 2);
-    		supermercado = ler_arquivo(supermercado);
-    		if(supermercado != NULL){
-                menu();
+    		barraProgresso("Carregando dados do ficheiro .txt...",2);
+    		sp = ler_arquivo(sp);
+    		if(sp != NULL){
+                menu(sp,rel);
     		}else{
                 printf("Erro ao carregar dados do ficheiro");
     		}
@@ -93,10 +97,10 @@ int cabecalho() {
 
 
 
-void menu() {
-
-  int opcao, opcao_8;
-  char input[50],input_8[20], opcao_continuar[20];
+void menu(Supermercado *supermercado,Relatorio *rel) {
+	
+  int opcao, opcao_8,itens_simples,itens_especiais,id_caixa;
+  char input[50],input_8[20], opcao_continuar[20], nome[50];
   limparTela();
 
   do {
@@ -124,27 +128,88 @@ void menu() {
 
     switch (opcao) {
       case 1: {
-        break;
+            limparTela();
+            printf("\n[ ABRIR CAIXA ]\n");
+            printf("Digite o ID da caixa (1-10): ");
+            fgets(input, sizeof(input), stdin);
+            id_caixa = ler_inteiro(input);
+            supermercado = abrirCaixa(supermercado, id_caixa);
+            break;
       }
       case 2: {
+      	limparTela();
+         printf("Em Desenvolvimento!");
         break;
       }
       case 3: {
+            limparTela();
+            printf("\n[ CADASTRO DE CLIENTES ]\n");
+
+            printf("Digite o ID da caixa: ");
+            fgets(input, sizeof(input), stdin);
+            id_caixa = ler_inteiro(input);
+
+            printf("Nome do cliente: ");
+            fgets(nome,sizeof(nome),stdin);
+            if (!validar_nome(nome))
+            {
+                printf("Nome inválido!\n");
+                break;
+            }
+
+            printf("Itens simples: ");
+            fgets(input,sizeof(input),stdin);
+            itens_simples = ler_inteiro(input);
+
+            printf("Itens especiais: ");
+            fgets(input,sizeof(input),stdin);
+            itens_especiais = ler_inteiro(input);
+
+            if(inserirCliente(supermercado, id_caixa, nome, itens_simples, itens_especiais))
+                printf("\n[ Cliente inserido com sucesso! ]\n");
+            
         break;
       }
+
       case 4:
+            limparTela();
+            printf("\n[ Pior Caixa ]\n");
+            if(piorCaixa(supermercado) != -1) 
+              printf("Caixa [%d] \n",piorCaixa(supermercado));
+            else
+              printf("Sem Caixas com Clientes\n");
         break;
+
       case 5: {
-        system("cls");
-        break;
+            limparTela();
+            printf("\n[ TAMANHO DAS Caixas ]\n");
+            imprimirTamanhoCaixas(supermercado);
+            break;
       }
-      case 6: {
-		printf("\n[ TROCAR DE FILA ]\n");
-        trocarClientFila(supermercado);
+      case 6:
+                printf("\n[ TROCAR DE FILA ]\n");
+	            printf("\nID do cliente: ");
+	            fgets(input,sizeof(input),stdin);
+                int id = ler_inteiro(input);
+                trocarClientFila(supermercado,id);
         break;
-	  }
 
       case 7: {
+        limparTela();
+            printf("\n[ Abandonar Caixa ]\n");
+
+            printf("Digite o ID da caixa: ");
+            fgets(input, sizeof(input), stdin);
+            id_caixa = ler_inteiro(input);
+
+            printf("Digite o ID do cliente: ");
+            fgets(input, sizeof(input), stdin);
+            int id_cliente = ler_inteiro(input);
+
+            if(abandonarCaixa(supermercado,id_caixa, id_cliente))
+                  printf("\nVolte Sempre!");
+            else
+                   printf("Erro...\n");
         break;
       }
       case 8: {
@@ -173,14 +238,49 @@ void menu() {
 
       case 9: {
 
+            limparTela();
+            do {
+              printf("\t\t\t\t1.Simular atendimento em uma Caixa especifíca\n\n");
+              
+              printf("\t\t\t\t2.Simular atendimento de todas Caixas ativas\n");
+              gets(input_8);
+              opcao_8 = ler_inteiro(input_8);
+            }while ((opcao_8 != 1) && (opcao_8 !=2));
+
+            if(opcao_8 == 1)
+			
+			{
+				
+            printf("Digite o ID da caixa: ");
+            fgets(input, sizeof(input), stdin);
+            int id = ler_inteiro(input);
+            
+            printf("Digite o número de clientes a serem atendidos: ");
+            fgets(input, sizeof(input), stdin);
+            int clientes_quant = ler_inteiro(input);
+            
+            simularAtendimentoCaixa(supermercado,id,clientes_quant,rel);
+            
+			}
+			
+			else
+			
+				simularAtendimentoGeral(supermercado, rel);
+	
         break;
       }
 
-	case 10: {
-
+	 case 10: {
+	 	
+        barraProgresso("Gerando relatório final .txt ...",2);
+        limparTela();
+        printf("Ficheiro Gerado: [Em Desenvolvimento]!");
+        imprimirRelatorio(rel);
         break;
       }
+      
       case 11: {
+        exit(0);
 
         break;
       }
@@ -193,57 +293,90 @@ void menu() {
   } while (opcao != 11);
 }
 
+
 void limparTela(){
 #ifdef _WIN32
-    system("chcp 65001 > nul");
+    system("cls");
+#else
+    system("clear");
 #endif
+}
 
-    menu();
+
+void barraProgresso(const char *mensagem, int segundos) {
+
+   int largura = 30;
+
+    printf("\n%s%s\n", BRANCO, mensagem);
+
+    for (int i = 0; i <= largura; i++) {
+        int percent = (i * 100) / largura;
+
+        printf("\r[");
+        printf(VERDE);
+        for (int j = 0; j < i; j++)
+            printf("#");
+        printf(BRANCO);
+        for (int j = i; j < largura; j++)
+            printf(" ");
+        printf("] %3d%%", percent);
+
+        fflush(stdout);
+        PAUSA((segundos * 1000) / largura);
+    }
+    printf("\n");
+}
+
+
+
+
+
+int ler_inteiro(char *str) {
+  char *final;
+  long valor = strtol(str, &final, 10);
+  
+   //Ignora espaços em branco finais (inclui '\n')
+  
+  	while (*final == ' ' || *final == '\n' || *final == '\t') {
+        final++;
+   	 }
+
+  if (*final != '\0') {
+    //printf("Erro: entrada não é um número válido.\n");
+    return -1;
+  }
+
+  return (int)valor;
+}
+
+int validar_nome(char *nome) {
+  // Verifica se o nome está vazio
+  if (nome == NULL || strlen(nome) == 0) {
+    printf("[ O nome não pode estar vazio! ]\n");
     return 0;
+  }
+
+  // Verifica se contém apenas espaços em branco
+  int apenasEspacos = 1;
+  for (int i = 0; nome[i] != '\0'; i++) {
+    if (nome[i] != ' ' && nome[i] != '\t' && nome[i] != '\n') {
+      apenasEspacos = 0;
+      break;
+    }
+  }
+
+  if (apenasEspacos) {
+    printf("[ O nome não pode conter apenas espaços! ]\n");
+    return 0;
+  }
+
+  // Verifica se o tamanho é maior que 30
+  if (strlen(nome) > 30) {
+    printf("[ O nome não pode ter mais de 30 caracteres! ]\n");
+    return 0;
+  }
+
+  return 1;  // Nome válido
 }
 
-int ler_inteiro(char *str)
-{
-    char *final;
-    long valor = strtol(str, &final, 10);
 
-    if (*final != '\0')
-    {
-        return -1;
-    }
-
-    return (int)valor;
-}
-
-int validar_nome(char *nome)
-{
-    if (nome == NULL || strlen(nome) == 0)
-    {
-        printf("[ O nome não pode estar vazio! ]\n");
-        return 0;
-    }
-
-    int apenasEspacos = 1;
-    for (int i = 0; nome[i] != '\0'; i++)
-    {
-        if (nome[i] != ' ' && nome[i] != '\t' && nome[i] != '\n')
-        {
-            apenasEspacos = 0;
-            break;
-        }
-    }
-
-    if (apenasEspacos)
-    {
-        printf("[ O nome não pode conter apenas espaços! ]\n");
-        return 0;
-    }
-
-    if (strlen(nome) > 30)
-    {
-        printf("[ O nome não pode ter mais de 30 caracteres! ]\n");
-        return 0;
-    }
-
-    return 1;
-}
