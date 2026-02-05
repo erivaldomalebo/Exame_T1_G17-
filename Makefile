@@ -2,49 +2,28 @@
 CC = gcc
 
 # Definir as flags de compilação
-CFLAGS = -Isrc/include -Wall -std=c99 -finput-charset=UTF-8 -fexec-charset=UTF-8
-
-# Diretórios
-SRC_DIR = src
-OBJ_DIR = obj
-BIN_DIR = bin
+CFLAGS = -Wall -std=c99 -mconsole
 
 # Lista de arquivos fonte
-SOURCES = $(SRC_DIR)/main.c \
-          $(SRC_DIR)/cliente.c \
-          $(SRC_DIR)/caixa.c
-
-# Lista de arquivos objeto
-OBJECTS = $(OBJ_DIR)/main.o \
-          $(OBJ_DIR)/cliente.o
+SRC = exame.c
 
 # Nome do executável
-TARGET = $(BIN_DIR)/programa
+OUT = programa
 
-# Criar diretórios se não existirem
-$(shell mkdir -p $(OBJ_DIR) $(BIN_DIR))
-
-# Regra principal
-all: $(TARGET)
-
-# Compilar o executável
-$(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) $(OBJECTS) -o $(TARGET)
+# Regra principal para compilar o projeto
+all:
+	$(CC) $(CFLAGS) $(SRC) -o $(OUT)
 	@echo "✓ Compilação concluída com sucesso!"
 
-# Compilar cada arquivo .c em .o
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Regra para executar o programa
+# Regra para executar o programa após compilação
 run: all
 	@echo "Executando programa..."
-	@./$(TARGET)
+	./$(OUT)
 
-# Limpar arquivos compilados
+# Limpar os arquivos compilados (como o executável)
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
-	@echo "✓ Arquivos compilados removidos!"
+	rm -f $(OUT)
+	@echo "✓ Executável removido!"
 
 # Recompilar tudo do zero
 rebuild: clean all
