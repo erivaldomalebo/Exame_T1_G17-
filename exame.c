@@ -4,56 +4,15 @@
 #include <time.h>
 #include <string.h>
 
-int gerarAleatorio(int min, int max)
-{
+#define TEMPO_SIMPLES 1
+#define TEMPO_ESPECIAIS 3
+#define TEMPO_ATENDIMENTO_PADRAO 5
+#define MAX 50
+#define WIDTH_NOME 20 //evitar crash da tabela de apresentacao dos dados
 
-<<<<<<< HEAD
-	return min + rand() % (max - min + 1);
-}
-
-void imprimir(Cliente *l)
-{
-	// Cabeçalho da tabela
-	printf("\n");
-	printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
-	printf("| ID   | Nome                           | Itens simples | Itens Especiais | Tempo de atendimento  |\n");
-	printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
-
-	// Verifica se a lista está vazia
-	if (l == NULL)
-	{
-		printf("|                                  Nenhum cliente cadastrado                                      |\n");
-		printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
-		return;
-	}
-
-	// Imprime cada cliente5
-
-	while (l != NULL)
-	{
-		printf("| %-4d | %-30s | %-13d | %-15d | %-19d s |\n",
-			   l->id, l->nome, l->itens_simples, l->itens_especiais, l->tempo_atendimento);
-		l = l->prox;
-	}
-
-	// Rodapé da tabela
-	printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
-
-	printf("\n");
-}
-
-Supermercado *criarCaixas() { return NULL; }
-
-Caixa *inicializarCaixa()
-{
-
-	Caixa *cx = (Caixa *)malloc(sizeof(Caixa));
-	if (cx)
-	{
-=======
 
 struct lista{
-	char nome[50];//O cliente será identificado pelo nome
+	char nome[MAX];
 	int id, itens_simples, itens_especiais, tempo_atendimento;
 	struct lista* prox;
 };
@@ -70,15 +29,53 @@ struct lista_fila{
 };
 
 struct stats {
-	 int totalClientAtendidos;
+	int totalClientAtendidos;
     int totalItensProcessados;
     int tempoTotalAtendimento;
     int filaMaisDemorada;
 };
 
+int gerarAleatorio(int min, int max) {
+
+    return min + rand() % (max - min + 1);
+}
 
 
 Supermercado *criarCaixas(){return NULL;}
+
+
+Caixa *inicializarCaixa(){
+
+	Caixa *cx = (Caixa*)malloc(sizeof(Caixa));
+	if(cx){
+		cx->inicio = NULL;
+		cx->fim = NULL;
+	}
+
+	else
+		printf("Erro na Alocação de memória");
+
+	return cx;
+}
+
+
+
+Relatorio *inicializar(){
+
+	Relatorio *rel = (Relatorio*)malloc(sizeof(Relatorio));
+	if(rel){
+	   rel->totalClientAtendidos =0;
+       rel->totalItensProcessados=0;
+       rel->tempoTotalAtendimento=0;
+       rel->filaMaisDemorada=0;
+	}
+
+	else
+		printf("Erro na Alocação de memória");
+
+	return rel;
+}
+
 
 Supermercado * ler_arquivo(Supermercado *s){
     char linha[100];
@@ -111,186 +108,201 @@ Supermercado * ler_arquivo(Supermercado *s){
 
 
 
-Caixa *inicializarCaixa(){
+Caixa *inserirCliente(Supermercado *sp,int id_caixa, char *nome, int itens_simples, int itens_especiais){
 
-	Caixa *cx = (Caixa*)malloc(sizeof(Caixa));
-	if(cx){
->>>>>>> f6851844e20bbb6d4bf92d98f6636ef2bd95ed77
-		cx->inicio = NULL;
-		cx->fim = NULL;
-	}
+	Caixa *cx = procurarCaixa(sp,id_caixa);
 
-	else
-		printf("Erro na Alocação de memória");
+	if (!cx) {
+      	if(id_caixa>0 && id_caixa<11)
+      	  	printf("Caixa [%d] está fechada\n",id_caixa);
+      	else
+      		printf("Verifique o id da Caixa [id]-[1-10]\n");
+        return NULL;
+    }
 
-	return cx;
+		Cliente *cl = (Cliente*)malloc(sizeof(Cliente));
+
+		if(!cl){
+			printf("Erro de alocação de memória");
+			return cx;
+		}
+
+
+            cl->id =  gerarAleatorio(1,999);
+			strcpy(cl->nome,nome);
+			cl->itens_especiais = itens_especiais;
+			cl->itens_simples = itens_simples;
+			cl->tempo_atendimento = TEMPO_ATENDIMENTO_PADRAO+(TEMPO_SIMPLES*itens_simples)+(TEMPO_ESPECIAIS*itens_especiais);
+			cl->prox = NULL;
+
+		if(!cx->inicio){
+            cx->inicio = cl;
+		}
+		else{
+            cx->fim->prox = cl;
+		}
+
+        cx->fim = cl;
+
+
+        return cx;
+
+
+
 }
 
-Caixa *inserirCliente(Supermercado *sp, int id_caixa, char *nome, int itens_simples, int itens_especiais)
-{
+int contaCaixasAbertas(Supermercado *sp){
 
-	Caixa *cx = procurarCaixa(sp, id_caixa);
+	if(!sp) return 0;
 
-	if (cx == NULL)
-	{
-		printf("Erro ao localizar Caixa");
+    return 1+contaCaixasAbertas(sp->prox);
+}
+
+Supermercado *abrirCaixa(Supermercado *sp,int id){
+
+	if(!(id>0 && id<11)){
+		printf("Verifique o id da Caixa [id]-[1-10]\n");
 		return NULL;
 	}
 
-	Cliente *cl = (Cliente *)malloc(sizeof(Cliente));
 
-	if (!cl)
-	{
-		printf("Erro de alocação de memória");
-		return cx;
-	}
+	 else if(contaCaixasAbertas(sp)>10){
+	 	 printf("Sem Caixas fechadas\n");
+	 	 return NULL;
+	 }
 
-	cl->id = gerarAleatorio(1, 999);
-	strcpy(cl->nome, nome);
-	cl->itens_especiais = itens_especiais;
-	cl->itens_simples = itens_simples;
-	cl->tempo_atendimento = 5 + (1 * itens_simples) + (3 * itens_especiais);
-	cl->prox = NULL;
+	 else{
 
-	if (!cx->inicio)
-	{
-		cx->inicio = cl;
-	}
-	else
-	{
-		cx->fim->prox = cl;
-	}
+            Supermercado *lista_caixa = (Supermercado*)malloc(sizeof(Supermercado));
 
-	cx->fim = cl;
+            if (lista_caixa == NULL) {
+                printf("Erro na alocação da caixa n");
+                return sp;
+            }
 
-	return cx;
-}
+			lista_caixa->id = id;
+			lista_caixa->prox = NULL;
+			lista_caixa->cx = inicializarCaixa();
+			lista_caixa->estado = 1;
 
-int contaCaixasAbertas(Supermercado *sp)
-{
+			// Criar novo no na lista de caixas (Supermercado)
+            if(verificarCaixa(sp,id)){
+                if (sp) {
+                    Supermercado *aux = sp;
 
-	if (!sp)
-		return 0;
+                    while (aux->prox)
+                        aux = aux->prox;
 
-	return 1 + contaCaixasAbertas(sp->prox);
-}
+                    aux->prox = lista_caixa;
+                }else{
+                    sp = lista_caixa;
+                }
+                
+                printf("Caixa [%d] aberta com sucesso!\n", id);
 
-Supermercado *abrirCaixa(Supermercado *sp, int id)
-{
+            }else
+                printf("Caixa[%d] Já aberta!\n",id);
 
-	if (!(id > 0 && id < 11))
-	{
-		printf("Verifique o id da Caixa [id]-[1-10]\n");
-		return sp;
-	}
-	else if (contaCaixasAbertas(sp) > 10)
-	{
-		printf("Sem Caixas fechadas\n");
-		return sp;
-	}
-	else
-	{
-		Supermercado *lista_caixa = (Supermercado *)malloc(sizeof(Supermercado));
-
-		if (lista_caixa == NULL)
-		{
-			printf("Erro na alocação da caixa n");
-			return sp;
-		}
-
-		lista_caixa->id = id;
-		lista_caixa->prox = NULL;
-		lista_caixa->cx = inicializarCaixa();
-		lista_caixa->estado = 1;
-
-		// Criar novo no na lista de caixas (Supermercado)
-		if (verificarCaixa(sp, id))
-		{
-			if (sp)
-			{
-				Supermercado *aux = sp;
-
-				while (aux->prox)
-					aux = aux->prox;
-
-				aux->prox = lista_caixa;
-			}
-			else
-			{
-				sp = lista_caixa;
-			}
-		}
-		else
-			printf("Caixa[%d] Já aberta!\n", id);
 
 		return sp;
-	}
+	 }
+
+
 }
 
-int tamanhoCaixa(Caixa *cx)
-{
-	int count = 0;
+int tamanhoCaixa(Caixa *cx){
+    int count = 0;
 
-	Cliente *temp = cx->inicio;
+    Cliente *temp = cx->inicio;
 
-	while (temp)
-	{
-		count++;
-		temp = temp->prox;
-	}
+    while (temp) {
+        count++;
+        temp = temp->prox;
+    }
 
-	return count;
+    return count;
 }
 
-void imprimirTamanhoCaixas(Supermercado *sp)
-{
+void imprimirTamanhoCaixas(Supermercado *sp){
 	int tam = 0;
-	Supermercado *temp = sp;
-	while (temp)
-	{
-		tam = tamanhoCaixa(temp->cx);
-		printf("\nCaixa [%d] -> [%d] clientes na fila\n", temp->id, tam);
-		temp = temp->prox;
-	}
+    Supermercado *temp = sp;
+    while (temp) {
+        tam = tamanhoCaixa(temp->cx);
+        printf("\nCaixa [%d] -> [%d] clientes na fila\n", temp->id, tam);
+        temp = temp->prox;
+    }
 }
 
-Caixa *procurarCaixa(Supermercado *sp, int id)
-{
-	Supermercado *temp = sp;
-	while (temp)
-	{
-		if (temp->id == id)
-			return temp->cx;
+Caixa *procurarCaixa(Supermercado *sp,int id){
+    Supermercado *temp = sp;
+    while (temp){
+    	if(temp->id == id)
+    		 return temp->cx;
 
-		temp = temp->prox;
+    	temp = temp->prox;
 	}
 
-	return NULL;
+   return NULL;
 }
 
-int verificarCaixa(Supermercado *sp, int id)
-{
-	Supermercado *temp = sp;
-	while (temp)
-	{
-		if (temp->id == id)
-			return 0;
 
-		temp = temp->prox;
+int verificarCaixa(Supermercado *sp,int id){
+    Supermercado *temp = sp;
+    while (temp){
+    	if(temp->id == id)
+    		 return 0;
+
+    	temp = temp->prox;
 	}
 
-	return 1;
+   return 1;
 }
 
-<<<<<<< HEAD
-void piorCaixa(Supermercado *sp)
-{
-=======
+
+int piorCaixa(Supermercado *sp){
+
+	if(sp){
+		Supermercado *temp = sp;
+		int maior = 0;
+		int soma;
+		int id =-1;
+
+		while(temp){
+		soma =0;
+		 Cliente *aux = temp->cx->inicio;
+
+		 while(aux){
+		 	soma += aux->tempo_atendimento;
+		 	aux = aux->prox;
+		 }
+
+		 if(soma>maior){
+		 	maior = soma;
+		 	id = temp->id;
+		 }
+
+
+		temp = temp->prox;
+		}
+
+			return id;
+	}
+
+}
+
 void imprimirInformacoesCaixa(Supermercado *sp, int id){
 
 	Caixa *cx = procurarCaixa(sp,id);
 	int tempo_total =0, itens_simples = 0, itens_especiais=0;
-	if (cx) {
+	
+	
+	 if (!cx) {
+      	if(id>0 && id<11)
+      	  	printf("\t\t\t\t\Caixa [%d] fechada\n", id);
+      	else
+      		printf("\t\t\t\t\Verifique o id da Caixa [id]-[1-10]\n");
+        return sp;
+    }
         printf("\n\t\t\t\t\t-----------------------------------");
 		printf("\n\t\t\t\t\t            C A I X A  %d",id);
 		printf("\n\t\t\t\t\t-----------------------------------\n");
@@ -305,59 +317,211 @@ void imprimirInformacoesCaixa(Supermercado *sp, int id){
 		printf("\t\t\t\t\t| Tempo Total de Atendiento -> %d seg\n", tempo_total);
 		printf("\t\t\t\t\t| Numero de itens especiais -> %d\n", itens_especiais);
 		printf("\t\t\t\t\t| Numero de itens simples   -> %d\n\n", itens_simples);
+		
+		imprimir_clientes(cx->inicio);
 
-	}else {
-		printf("\t\t\t\t\tCaixa nao encontrada\n\n");
+}
+
+Supermercado *abandonarCaixa(Supermercado *sp, int id_caixa, int idCliente){
+	
+    if (!sp) {
+        return NULL;
+    }
+
+    Caixa *cx = procurarCaixa(sp, id_caixa);
+    
+    if (!cx) {
+      	if(id_caixa>0 && id_caixa<11)
+      	  	printf("Caixa [%d] fechada\n", id_caixa);
+      	else
+      		printf("Verifique o id da Caixa [id]-[1-10]\n");
+        return sp;
+    }
+
+    if (!cx->inicio) {
+        printf("Caixa vazia\n");
+        return sp;
+    }
+    
+    
+    Cliente *aux = cx->inicio;
+    Cliente *temp = NULL;
+
+
+    if (aux->id == idCliente) {
+        cx->inicio = aux->prox;
+        free(aux);
+        return sp;
+    }
+
+    while (aux && aux->id != idCliente) {
+        temp = aux;
+        aux = aux->prox;
+    }
+
+    if (!aux) {
+        printf("Cliente não encontrado na fila\n");
+        return sp;
+    }
+
+    temp->prox = aux->prox;
+    printf("Cliente [%s] desistiu da fila",aux->nome);
+    free(aux);
+
+    return sp;
+}
+	
+void simularAtendimentoGeral(Supermercado *sp, Relatorio *rel){
+    if (!sp) {
+        printf("Lista de Caixas inexistente\n");
+        return;
+    }
+    
+   
+
+    Supermercado *aux = sp;
+    while (aux) {
+        printf("\nAtendimento na Caixa %d:\n", aux->id);
+        printf("+-----------------------------------------------------------------------------------------------+\n");
+        printf("|  ID   |      Nome            | Itens Simples      | Itens Especiais    | Tempo de Atendimento |\n");
+        printf("+-----------------------------------------------------------------------------------------------+\n");
+
+        int atendidos = 0;
+        int tam = tamanhoCaixa(aux->cx);
+        Cliente *cl = aux->cx->inicio;
+
+        while (cl && atendidos < tam) {
+
+			  char nome_temp[WIDTH_NOME + 1];
+       		 strncpy(nome_temp, cl->nome, WIDTH_NOME);
+       		 nome_temp[WIDTH_NOME] = '\0';
+
+        // Remove '\n' que vem do fgets
+        char *p = strchr(nome_temp, '\n');
+        if (p) *p = '\0';
+        
+        
+            printf("| %-5d | %-20s | %-18d | %-18d | %-20d |\n",cl->id, nome_temp, cl->itens_simples, cl->itens_especiais,cl->tempo_atendimento);
+
+            // atualizar estatísticas globais
+             rel->totalClientAtendidos++;
+        	 rel->totalItensProcessados += (cl->itens_especiais + cl->itens_simples);
+        	 rel->tempoTotalAtendimento += cl->tempo_atendimento;
+        	 rel->filaMaisDemorada = piorCaixa(sp);
+
+
+            // dequeue: remover cliente da fila
+            Cliente *remover = cl;
+            cl = cl->prox;
+            free(remover);
+            aux->cx->inicio = cl;
+
+            atendidos++;
+        }
+
+        if (atendidos == 0) {
+            printf("Nenhum cliente atendido.\n");
+        } else {
+            printf("+-----------------------------------------------------------------------------------------------+\n");
+            printf("Total atendidos nesta caixa: %d\n", atendidos);
+        }
+
+       
+
+        aux = aux->prox; // próxima caixa
+    }
+}
+
+void simularAtendimentoCaixa(Supermercado *sp, int idCaixa, int quantCliente, Relatorio *rel){
+    if (!sp) {
+        printf("Lista de Caixas inexistente\n");
+        return;
+    }
+    
+
+    // Procurar a caixa específica
+    Caixa *cx = procurarCaixa(sp, idCaixa);
+    if (!cx) {
+      	if(idCaixa>0 && idCaixa<11)
+      	  	printf("Caixa [%d] fechada\n", idCaixa);
+      	else
+      		printf("Verifique o id da Caixa [id]-[1-10]\n");
+        return;
+    }
+    
+    if(quantCliente>tamanhoCaixa(cx)){
+    	printf("Quantidade de clientes maior que o disponivel\nClientes na caixa [%d]: %d",idCaixa,tamanhoCaixa(cx));
+    	return sp;
 	}
 
-}
+    printf("\nAtendimento na Caixa %d:\n", sp->id);
+    printf("+-----------------------------------------------------------------------------------------------+\n");
+    printf("|  ID   |      Nome            | Itens Simples      | Itens Especiais    | Tempo de Atendimento |\n");
+    printf("+-----------------------------------------------------------------------------------------------+\n");
 
->>>>>>> f6851844e20bbb6d4bf92d98f6636ef2bd95ed77
+    int atendidos = 0;
+    Cliente *cl = cx->inicio;
 
-	if (sp)
-	{
-		Supermercado *temp = sp;
-		int maior = 0;
-		int soma;
-		int id = -1;
+    while (cl && atendidos < quantCliente) {
 
-		while (temp)
-		{
-			soma = 0;
-			Cliente *aux = temp->cx->inicio;
+		  char nome_temp[WIDTH_NOME + 1];
+       	  strncpy(nome_temp, cl->nome, WIDTH_NOME);
+          nome_temp[WIDTH_NOME] = '\0';
 
-			while (aux)
-			{
-				soma += aux->tempo_atendimento;
-				aux = aux->prox;
-			}
+        // Remove '\n' que vem do fgets
+        char *p = strchr(nome_temp, '\n');
+        if (p) *p = '\0';
+        
+        
+        printf("| %-5d | %-20s | %-18d | %-18d | %-20d |\n", cl->id, nome_temp, cl->itens_simples, cl->itens_especiais, cl->tempo_atendimento);
 
-			if (soma > maior)
-			{
-				maior = soma;
-				id = temp->id;
-			}
+        // atualizar relatório global
+        rel->totalClientAtendidos++;
+        rel->totalItensProcessados += (cl->itens_especiais + cl->itens_simples);
+        rel->tempoTotalAtendimento += cl->tempo_atendimento;
+        rel->filaMaisDemorada = piorCaixa(sp);
 
-			temp = temp->prox;
-		}
+        // remover cliente da fila
+        Cliente *remover = cl;
+        
+        cl = cl->prox;
+        
+        free(remover);
+        
+        cx->inicio = cl;
 
-		if (id != -1)
-			printf("Pior Caixa: FILA[%d]\n", id);
-		else
-			printf("Nenhuma caixa encontrada!");
-	}
-}
+        atendidos++;
+    }
 
-<<<<<<< HEAD
-/* Limpa o buffer do teclado */
-void limparBuffer()
-{
-	int c;
-	while ((c = getchar()) != '\n' && c != EOF)
-		;
-}
+    if (atendidos == 0) {
+        printf("Nenhum cliente atendido.\n");
+    } else {
+        printf("+-----------------------------------------------------------------------------------------------+\n");
+        printf("Total atendidos nesta caixa: %d\n", atendidos);
+    }
+ 
+}	
+	
 
-// Encontra a MELHOR caixa (menor tempo)
+void imprimirRelatorio(Relatorio *rel){
+    if (!rel) {
+        printf("Relatório inexistente\n");
+        return;
+    }
+
+    printf("\n================ RELATÓRIO FINAL DA SIMULAÇÃO ================\n");
+    printf("+------------------------------------------------------------+\n");
+    printf("| Métrica                          | Valor                   |\n");
+    printf("+------------------------------------------------------------+\n");
+    printf("| Total de clientes atendidos      | %-23d |\n", rel->totalClientAtendidos);
+    printf("| Total de itens  process.         | %-23d |\n", rel->totalItensProcessados);
+    printf("| Caixa mais demorada              | %-23d |\n", rel->filaMaisDemorada);
+    printf("| Tempo total de atendimento       | %-23d |\n", rel->tempoTotalAtendimento);
+
+    printf("+-------------------------------------------------------------+\n");
+    printf("===============================================================\n\n");
+}	
+	
 Caixa *melhorCaixa(Supermercado *sp)
 {
 	if (!sp)
@@ -405,7 +569,8 @@ Caixa *melhorCaixa(Supermercado *sp)
 	}
 }
 
-Cliente *removerClientePorNome(Caixa *cx, char *nome)
+
+Cliente *removerCliente(Caixa *cx, int id)
 {
 	if (!cx || !cx->inicio)
 		return NULL;
@@ -414,7 +579,7 @@ Cliente *removerClientePorNome(Caixa *cx, char *nome)
 	Cliente *anterior = NULL;
 
 	// Procurar o cliente
-	while (atual && strcmp(atual->nome, nome) != 0)
+	while (atual && atual->id != id)
 	{
 		anterior = atual;
 		atual = atual->prox;
@@ -444,20 +609,14 @@ Cliente *removerClientePorNome(Caixa *cx, char *nome)
 	return atual;
 }
 
-void trocarClientFila(Supermercado *sp)
+void trocarClientFila(Supermercado *sp, int id)
 {
 	// Verificar se existe sp
 	if (!sp)
 	{
-		printf("\n✗ Nenhuma caixa aberta!\n");
+		printf("\nNenhuma caixa aberta!\n");
 		return;
 	}
-
-	// Perguntar o nome do cliente
-	char nome[MAX];
-	printf("\nNome do cliente: ");
-	fgets(nome, MAX, stdin);
-	nome[strcspn(nome, "\n")] = 0;
 
 	// Procurar o cliente em todas as filas
 	Supermercado *temp = sp;
@@ -470,7 +629,7 @@ void trocarClientFila(Supermercado *sp)
 		Cliente *aux = temp->cx->inicio;
 		while (aux)
 		{
-			if (strcmp(aux->nome, nome) == 0)
+			if (aux->id == id)
 			{
 				cliente_encontrado = aux;
 				caixa_atual = temp->cx;
@@ -488,7 +647,7 @@ void trocarClientFila(Supermercado *sp)
 	// Verificar se o cliente foi encontrado
 	if (!cliente_encontrado)
 	{
-		printf("\n✗ Cliente '%s' não encontrado!\n", nome);
+		printf("\nCliente não encontrado!\n", cliente_encontrado->nome);
 		return;
 	}
 
@@ -499,16 +658,16 @@ void trocarClientFila(Supermercado *sp)
 
 	if (!melhor || melhor == caixa_atual)
 	{
-		printf("\n✗ Cliente já está na melhor fila!\n");
+		printf("\nCliente já está na melhor fila!\n");
 		return;
 	}
 
 	// Remover cliente da fila atual
-	Cliente *removido = removerClientePorNome(caixa_atual, nome);
+	Cliente *removido = removerCliente(caixa_atual, id);
 
 	if (!removido)
 	{
-		printf("\n✗ Erro ao remover cliente!\n");
+		printf("\nErro ao remover cliente!\n");
 		return;
 	}
 
@@ -525,42 +684,45 @@ void trocarClientFila(Supermercado *sp)
 	}
 	removido->prox = NULL;
 
-	printf("\n✓ Cliente '%s' trocado para a melhor fila!\n", nome);
-}
-=======
-
-int gerarAleatorio(int min, int max) {
-
-    return min + rand() % (max - min + 1);
+	printf("\nCliente '%s' trocado para a melhor fila!\n",removido->nome);
 }
 
-void imprimir(Cliente *l) {
-    // Cabeçalho da tabela
+
+void imprimir_clientes(Cliente *l)
+{
+
     printf("\n");
-    printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
-    printf("| ID   | Nome                           | Itens simples | Itens Especiais | Tempo de atendimento  |\n");
-    printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
+    printf("+-------+----------------------+------------------+------------------+----------------------+\n");
+    printf("|  ID   |        Nome          | Itens Simples    | Itens Especiais  | Tempo Atendimento    |\n");
+    printf("+-------+----------------------+------------------+------------------+----------------------+\n");
 
-
-    // Verifica se a lista está vazia
-    if (l == NULL) {
-        printf("|                                  Nenhum cliente cadastrado                                      |\n");
-        printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
+    if (l == NULL)
+    {
+        printf("|                                  Nenhum cliente cadastrado                                   |\n");
+        printf("+-------+----------------------+------------------+------------------+----------------------+\n");
         return;
     }
 
-    // Imprime cada cliente5
+    while (l != NULL)
+    {
+        char nome_temp[WIDTH_NOME + 1];
+        strncpy(nome_temp, l->nome, WIDTH_NOME);
+        nome_temp[WIDTH_NOME] = '\0';
 
-    while (l != NULL) {
-        printf("| %-4d | %-30s | %-13d | %-15d | %-19d s |\n",
-               l->id, l->nome, l->itens_simples,l->itens_especiais, l->tempo_atendimento);
+        // Remove '\n' que vem do fgets
+        char *p = strchr(nome_temp, '\n');
+        if (p) *p = '\0';
+
+        printf("| %-5d | %-20s | %-16d | %-16d | %-20d |\n",
+               l->id,
+               nome_temp,
+               l->itens_simples,
+               l->itens_especiais,
+               l->tempo_atendimento);
+
         l = l->prox;
     }
 
-    // Rodapé da tabela
-    printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
-
+    printf("+-------+----------------------+------------------+------------------+----------------------+\n");
     printf("\n");
 }
-
->>>>>>> f6851844e20bbb6d4bf92d98f6636ef2bd95ed77
