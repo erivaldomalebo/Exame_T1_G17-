@@ -27,6 +27,7 @@ int cabecalho();
 void limparTela();
 void barraProgresso(const char *mensagem, int segundos);
 
+Supermercado *supermercado = NULL;
 int main(){
 
   //setlocale(LC_ALL, "Portuguese");
@@ -61,6 +62,7 @@ int main(){
 
 
 int cabecalho() {
+  supermercado = criarCaixas();
 	 char opcao[10];
     printf("\n╔══════════════════════════════════════════════════════════════╗\n");
       printf("║       SIMULAÇÂO DE GESTÂO DE FILAS DE SUPERMERCADOS          ║\n");
@@ -95,8 +97,15 @@ int cabecalho() {
     else
     	{
     		limparTela();
-    		barraProgresso("Carregando dados do ficheiro .txt...", 3);
-    		menu();
+    		//Trocar para 3seg
+    		barraProgresso("Carregando dados do ficheiro .txt...", 2);
+    		supermercado = ler_arquivo(supermercado);
+    		if(supermercado != NULL){
+                menu();
+    		}else{
+                printf("Erro ao carregar dados do ficheiro");
+    		}
+
 		}
 }
 
@@ -104,11 +113,13 @@ int cabecalho() {
 
 void menu() {
 
-  int opcao;
+  int opcao, opcao_8;
+  char input[50],input_8[20], opcao_continuar[20];
+  limparTela();
 
   do {
 
-  	   limparTela();
+
     printf("\n\n\t\t\t\t------------------------------------------------\n\n");
     printf("\t\t\t\tS U P E R M E R C A D O - I S P T E C _ M A L L \n\n");
     printf("\t\t\t\t------------------------------------------------\n\n");
@@ -126,7 +137,8 @@ void menu() {
     fflush(stdin);
 
     printf("\nEscolha uma Opcao\n");
-    gets(opcao);
+    gets(input);
+    opcao = ler_inteiro(input);
 
     switch (opcao) {
       case 1: {
@@ -152,6 +164,25 @@ void menu() {
       }
       case 8: {
 
+        do{
+            limparTela();
+            do {
+              printf("\t\t\t\tSobre qual fila deseja obter informação ?   ");
+              gets(input_8);
+              opcao_8 = ler_inteiro(input_8);
+
+              //Nao permite que a fila seja uma letra ou um negativo
+              if (opcao_8 < 0) {
+                printf("\t\t\t\t[ A fila deve ser um numero inteiro positivo ]\n");
+              }
+            }while (opcao_8 < 0);
+
+            imprimirInformacoesCaixa(supermercado,opcao_8);
+            printf("\n\t\t\t\tDeseja continuar [1-sim/0-nao]?  ");
+            gets(opcao_continuar);
+
+        }while(strcmp(opcao_continuar,"1")==0);
+        limparTela();
         break;
       }
 
@@ -170,11 +201,12 @@ void menu() {
       }
 
       default:
+        limparTela();
         printf("Opcao Invalida!\n");
+
       }
   } while (opcao != 11);
 }
-
 
 void limparTela(){
 #ifdef _WIN32
@@ -254,61 +286,3 @@ int validar_nome(char *nome) {
 
   return 1;  // Nome válido
 }
-
-
-
-/*void menu2() {
-
-  int opcao, opcao_eliminar_no, num_itens_simples, num_items_especiais;
-  char nome[MAX], input[MAX], input_numero[MAX], input_nome[MAX];
-
-  srand(time(NULL));
-
-  do {
-    printf("\n\n\t\t\t\t-------------------------------------\n\n");
-    printf("\t\t\t\t\tS U P E R M E R C A D O \n\n");
-    printf("\t\t\t\t-------------------------------------\n\n");
-
-    printf("\t\t\t\t\t1 -  Iniciar a simulação \n");
-    printf("\t\t\t\t\t2 -  Abrir caixa  \n");
-    printf("\t\t\t\t\t3 -  Fechar caixa \n");
-    printf("\t\t\t\t\t4 -  Inserir cliente \n");
-    printf("\t\t\t\t\t5 -  Mostrar Pior fila\n");
-    printf("\t\t\t\t\t6 -  Tamanho das filas\n");
-    printf("\t\t\t\t\t7 -  Trocar de fila \n");
-    printf("\t\t\t\t\t8 -  Desistir da fila\n");
-    printf("\t\t\t\t\t9 -  Imprimir fila\n");
-    printf("\t\t\t\t\t10 - Simular atendimento \n");
-    printf("\t\t\t\t\t11 - Terminar simulação \n");
-    printf("\t\t\t\t\t12 - Mostrar todos clientes \n");
-    printf("\t\t\t\t\t13 - SAIR\n");
-    fflush(stdin);
-        //Inicio - > Inserir Cliente
-      case 4: {
-        system("cls");
-        printf("\t\t\t\t\t C A D A S T R O  D E  C L I E N T E S \n\n");
-        printf("\t\t\t\t\t | N O M E:  ");
-        fflush(stdin);
-        gets(nome);
-        fflush(stdin);
-        printf("\n\t\t\t\t\t | I T E N S  S I M P L E S:  ");
-        scanf("%d", &num_itens_simples);
-        fflush(stdin);
-        printf("\n\t\t\t\t\t | I T E N S  E S P E C I A I S:  ");
-        scanf("%d", &num_items_especiais);
-
-        clientes = inserir_cliente(clientes, nome,num_itens_simples, num_items_especiais);
-        printf("\n\t\t\t\t\t Cliente Inserido com sucesso !!!");
-        fflush(stdin);
-
-
-        break;
-      
-
-      default:
-        printf("Opcao Invalida!\n");
-      }
-  } while (opcao != 9);
-}*/
-
-
