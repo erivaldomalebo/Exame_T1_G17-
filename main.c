@@ -268,7 +268,7 @@ int validar_nome(char *nome) {
   int apenasEspacos = 1;
   for (int i = 0; nome[i] != '\0'; i++) {
     if (nome[i] != ' ' && nome[i] != '\t' && nome[i] != '\n') {
-      apenasEspacos = 0;
+      apenasEspacos =0;
       break;
     }
   }
