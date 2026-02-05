@@ -138,8 +138,11 @@ void menu() {
         system("cls");
         break;
       }
-      case 6:
+      case 6: {
+		printf("\n[ TROCAR DE FILA ]\n");
+        trocarClientFila(supermercado);
         break;
+	  }
 
       case 7: {
         break;
