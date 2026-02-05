@@ -13,6 +13,7 @@ typedef struct lista_fila Supermercado;
 
 
 void imprimir(Cliente *l);
+Supermercado *ler_arquivo(Supermercado *s);
 int gerarAleatorio(int min, int max);
 Supermercado *criarCaixas();
 Caixa *inicializarCaixa();
@@ -23,6 +24,7 @@ int tamanhoCaixa(Caixa *cx);
 void imprimirTamanhoCaixas(Supermercado *sp);
 Caixa* procurarCaixa(Supermercado *sp, int id);
 void piorCaixa(Supermercado *sp);
+void imprimirInformacoesCaixa(Supermercado *sp, int id);
 int verificarCaixa(Supermercado *sp,int id);
 
 /*Caixa *fecharCaixa(Supermercado *sp, int id);*/
