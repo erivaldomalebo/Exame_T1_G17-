@@ -41,6 +41,7 @@ typedef struct lista_fila Supermercado;
 typedef struct stats Estatistica;
 
 void imprimir(Cliente *l);
+Supermercado *ler_arquivo(Supermercado *s);
 int gerarAleatorio(int min, int max);
 Supermercado *criarCaixas();
 Caixa *inicializarCaixa();
@@ -51,12 +52,17 @@ int tamanhoCaixa(Caixa *cx);
 void imprimirTamanhoCaixas(Supermercado *sp);
 Caixa *procurarCaixa(Supermercado *sp, int id);
 void piorCaixa(Supermercado *sp);
+<<<<<<< HEAD
 int verificarCaixa(Supermercado *sp, int id);
 
 void trocarClientFila(Supermercado *sp);
 Cliente *removerClientePorNome(Caixa *cx, char *name);
 Caixa *melhorCaixa(Supermercado *sp);
 void limparBuffer();
+=======
+void imprimirInformacoesCaixa(Supermercado *sp, int id);
+int verificarCaixa(Supermercado *sp,int id);
+>>>>>>> f6851844e20bbb6d4bf92d98f6636ef2bd95ed77
 
 /*Caixa *fecharCaixa(Supermercado *sp, int id);*/
 

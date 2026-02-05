@@ -7,6 +7,7 @@
 int gerarAleatorio(int min, int max)
 {
 
+<<<<<<< HEAD
 	return min + rand() % (max - min + 1);
 }
 
@@ -49,6 +50,72 @@ Caixa *inicializarCaixa()
 	Caixa *cx = (Caixa *)malloc(sizeof(Caixa));
 	if (cx)
 	{
+=======
+
+struct lista{
+	char nome[50];//O cliente será identificado pelo nome
+	int id, itens_simples, itens_especiais, tempo_atendimento;
+	struct lista* prox;
+};
+
+struct fila{
+	struct lista *inicio;
+	struct lista *fim;
+};
+
+struct lista_fila{
+	int id, estado; //1-aberta, 0-fechada
+	struct fila *cx;
+	struct lista_fila *prox;
+};
+
+struct stats {
+	 int totalClientAtendidos;
+    int totalItensProcessados;
+    int tempoTotalAtendimento;
+    int filaMaisDemorada;
+};
+
+
+
+Supermercado *criarCaixas(){return NULL;}
+
+Supermercado * ler_arquivo(Supermercado *s){
+    char linha[100];
+    FILE *arquivo = fopen("dados.txt", "r");
+
+    if(arquivo == NULL)
+        return NULL;
+
+
+    while(fgets(linha, sizeof(linha), arquivo) != NULL){
+
+        char nome_temp[50];
+        int itens_temp, caixa_temp;
+        if(sscanf(linha,"%s %d %d",nome_temp,&itens_temp, &caixa_temp) == 3){
+            int itens_simples = (int) itens_temp / 2;
+            int itens_especiais = itens_temp - itens_simples;
+            if(verificarCaixa(s,caixa_temp) != 0){
+                 s = abrirCaixa(s, caixa_temp);
+            }
+
+            inserirCliente(s, caixa_temp, nome_temp, itens_simples, itens_especiais);
+
+        }
+    }
+
+    fclose(arquivo);
+    return s;
+}
+
+
+
+
+Caixa *inicializarCaixa(){
+
+	Caixa *cx = (Caixa*)malloc(sizeof(Caixa));
+	if(cx){
+>>>>>>> f6851844e20bbb6d4bf92d98f6636ef2bd95ed77
 		cx->inicio = NULL;
 		cx->fim = NULL;
 	}
@@ -215,8 +282,37 @@ int verificarCaixa(Supermercado *sp, int id)
 	return 1;
 }
 
+<<<<<<< HEAD
 void piorCaixa(Supermercado *sp)
 {
+=======
+void imprimirInformacoesCaixa(Supermercado *sp, int id){
+
+	Caixa *cx = procurarCaixa(sp,id);
+	int tempo_total =0, itens_simples = 0, itens_especiais=0;
+	if (cx) {
+        printf("\n\t\t\t\t\t-----------------------------------");
+		printf("\n\t\t\t\t\t            C A I X A  %d",id);
+		printf("\n\t\t\t\t\t-----------------------------------\n");
+		printf("\t\t\t\t\t| Numero de Clientes        -> %d\n", tamanhoCaixa(cx));
+		Cliente *aux = cx->inicio;
+		while (aux) {
+			tempo_total += aux->tempo_atendimento;
+			itens_simples += aux->itens_simples;
+			itens_especiais += aux->itens_especiais;
+			aux = aux->prox;
+		}
+		printf("\t\t\t\t\t| Tempo Total de Atendiento -> %d seg\n", tempo_total);
+		printf("\t\t\t\t\t| Numero de itens especiais -> %d\n", itens_especiais);
+		printf("\t\t\t\t\t| Numero de itens simples   -> %d\n\n", itens_simples);
+
+	}else {
+		printf("\t\t\t\t\tCaixa nao encontrada\n\n");
+	}
+
+}
+
+>>>>>>> f6851844e20bbb6d4bf92d98f6636ef2bd95ed77
 
 	if (sp)
 	{
@@ -252,6 +348,7 @@ void piorCaixa(Supermercado *sp)
 	}
 }
 
+<<<<<<< HEAD
 /* Limpa o buffer do teclado */
 void limparBuffer()
 {
@@ -430,3 +527,40 @@ void trocarClientFila(Supermercado *sp)
 
 	printf("\n✓ Cliente '%s' trocado para a melhor fila!\n", nome);
 }
+=======
+
+int gerarAleatorio(int min, int max) {
+
+    return min + rand() % (max - min + 1);
+}
+
+void imprimir(Cliente *l) {
+    // Cabeçalho da tabela
+    printf("\n");
+    printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
+    printf("| ID   | Nome                           | Itens simples | Itens Especiais | Tempo de atendimento  |\n");
+    printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
+
+
+    // Verifica se a lista está vazia
+    if (l == NULL) {
+        printf("|                                  Nenhum cliente cadastrado                                      |\n");
+        printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
+        return;
+    }
+
+    // Imprime cada cliente5
+
+    while (l != NULL) {
+        printf("| %-4d | %-30s | %-13d | %-15d | %-19d s |\n",
+               l->id, l->nome, l->itens_simples,l->itens_especiais, l->tempo_atendimento);
+        l = l->prox;
+    }
+
+    // Rodapé da tabela
+    printf("+------+--------------------------------+---------------+-----------------+-----------------------+\n");
+
+    printf("\n");
+}
+
+>>>>>>> f6851844e20bbb6d4bf92d98f6636ef2bd95ed77
