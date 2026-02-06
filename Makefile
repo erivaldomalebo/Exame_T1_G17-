@@ -2,10 +2,10 @@
 CC = gcc
 
 # Definir as flags de compilação
-CFLAGS = -Wall -std=c99 -mconsole
+CFLAGS = -Wall -std=c99
 
 # Lista de arquivos fonte
-SRC = exame.c
+SRC = main.c
 
 # Nome do executável
 OUT = programa
