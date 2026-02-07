@@ -55,7 +55,6 @@ Supermercado *ler_arquivo(Supermercado *s)
 
 	while (fgets(linha, sizeof(linha), arquivo) != NULL)
 	{
-
 		char nome_temp[50];
 		int itens_temp, caixa_temp;
 		if (sscanf(linha, "%s %d %d", nome_temp, &itens_temp, &caixa_temp) == 3)
@@ -155,6 +154,40 @@ Supermercado *fecharCaixa(Supermercado *sp, int id)
 		printf("Caixa com id %d nao encontrado\n", id);
 		return sp;
 	}
+
+	// Transferir clientes para outras caixas
+	Cliente *cli = temp->cx->inicio;
+
+	while (cli)
+	{
+		Cliente *prox = cli->prox;
+		// Encontrar melhor caixa aberta (primeira diferente da atual)
+		Supermercado *melhor = melhorCaixa(temp);
+		if (melhor || melhor->id != id)
+		{
+			cli->prox = NULL;
+
+			if (!melhor->cx->inicio)
+			{
+				melhor->cx->inicio = cli;
+				melhor->cx->fim = cli;
+			}
+			else
+			{
+				melhor->cx->fim->prox = cli;
+				melhor->cx->fim = cli;
+			}
+		}
+		else
+		{
+			printf("Nao ha outra caixa aberta para transferir clientes!\n");
+			return;
+		}
+
+		cli = prox;
+	}
+
+	free(temp->cx);
 
 	// Se for o primeiro nó da lista
 	if (ant_temp == NULL)
