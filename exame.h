@@ -61,5 +61,6 @@ void imprimirInformacoesCaixa(Supermercado *sp, int id);
 void imprimir_clientes(Cliente *l);
 void terminarSimulação(Supermercado *sp);
 void gerarRelatorioArquivo(Relatorio *rel, const char *nomeArquivo);
+Supermercado *fecharCaixa(Supermercado *sp, int id);
 
 #endif
